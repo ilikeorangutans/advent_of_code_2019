@@ -1,11 +1,22 @@
 use std::io;
 
 fn main() {
-    let mut mass = 100756;
+    let stdin = io::stdin();
 
-    let needed = rocket_equation(mass);
+    let mut total = 0;
+    loop {
+        let mut buffer = String::new();
+        stdin.read_line(&mut buffer).expect("line");
+        if buffer == "" {
+            break;
+        }
 
-    println!("mass: {}, fuel: {}", mass, needed);
+        let mass: i64 = buffer.trim().parse().expect("expected ingeter");
+        let needed = rocket_equation(mass);
+        total += needed;
+    }
+
+    println!("{}", total);
 }
 
 fn rocket_equation(mass: i64) -> i64 {
