@@ -13,9 +13,27 @@ fn main() {
     program[1] = 12;
     program[2] = 2;
 
-    match run_program(program) {
-        Ok(updated_program) => println!("Result at 0: {}", updated_program[0]),
-        Err(message) => println!("execution error: {}", message),
+
+    let expected_output = 19690720;
+
+    'outer: for noun in 0..99 {
+        for verb in 0..99 {
+            let mut program = program.clone();
+            program[1] = noun;
+            program[2] = verb;
+            match run_program(program) {
+                Ok(updated_program) => {
+                    println!("Result at 0: {}", updated_program[0]);
+                    if updated_program[0] == expected_output {
+
+                        println!("noun: {}, verb: {}", noun, verb);
+                        println!("answer: {}", noun * 100 + verb);
+                        break 'outer;
+                    }
+                },
+                Err(message) => println!("execution error: {}", message),
+            }
+        }
     }
 }
 
@@ -39,10 +57,6 @@ fn run_program(mut program: Vec<i64>) -> Result<Vec<i64>, String> {
                 let dst = *program.get(pc + 3).unwrap() as usize;
                 let val = program[a] + program[b];
                 program[dst] = val;
-                println!(
-                    "{} [{}] + {} [{}] = {} [{}]",
-                    a, program[a], b, program[b], dst, val
-                );
                 pc + 4
             }
             2 => {
@@ -51,10 +65,6 @@ fn run_program(mut program: Vec<i64>) -> Result<Vec<i64>, String> {
                 let dst = *program.get(pc + 3).unwrap() as usize;
                 let val = program[a] * program[b];
                 program[dst] = val;
-                println!(
-                    "{} [{}] * {} [{}] = {} [{}]",
-                    a, program[a], b, program[b], dst, val
-                );
                 pc + 4
             }
             99 => return Ok(program),
